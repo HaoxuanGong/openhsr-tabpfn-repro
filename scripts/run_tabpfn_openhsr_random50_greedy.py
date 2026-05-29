@@ -174,7 +174,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--min-improvement", type=float, default=0.0)
     parser.add_argument("--max-greedy-steps", type=int, default=8)
     parser.add_argument("--evaluate-all-features-reference", action=argparse.BooleanOptionalAction, default=True)
-    parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="cuda")
+    parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
     parser.add_argument("--tabpfn-model-path", default="auto")
     parser.add_argument("--tabpfn-n-estimators", type=int, default=8)
     parser.add_argument("--tabpfn-n-preprocessing-jobs", type=int, default=1)

@@ -58,7 +58,7 @@ Zenodo or GitHub repository and place it at `data/OpenHSR.csv`.
 ## Run OpenHSR-only TabPFN-3
 
 ```bash
-python scripts/run_tabpfn_openhsr_random50_greedy.py --openhsr-data data/OpenHSR.csv --output-dir results/openhsr_tabpfn_random50_greedy --n-splits 200 --test-size 50 --validation-size 50 --selection-metric raw_mse --device cuda
+python scripts/run_tabpfn_openhsr_random50_greedy.py --openhsr-data data/OpenHSR.csv --output-dir results/openhsr_tabpfn_random50_greedy --n-splits 200 --test-size 50 --validation-size 50 --selection-metric raw_mse --device auto
 ```
 
 Key outputs:
@@ -111,4 +111,3 @@ Key outputs:
 This repository contains only code and documentation for OpenHSR-based
 reproducibility. OpenHSR data should be cited and used according to the OpenHSR
 dataset licence. TabPFN-3 should be used according to the TabPFN licence.
-
