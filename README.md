@@ -35,9 +35,37 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-TabPFN-3 may require access to the TabPFN model weights under the TabPFN
-licence. Follow the official TabPFN installation and authentication instructions
-for your environment.
+## TabPFN-3 Model Access
+
+This repository does not distribute TabPFN-3 model weights or any model-access
+token. Users must obtain their own TabPFN-3 access from Prior Labs and comply
+with the TABPFN-3 licence.
+
+For local interactive use, the `tabpfn` package can open a browser on first use
+so the user can log in, accept the licence, and cache the authentication token
+locally. For headless servers or notebooks, create a Prior Labs API key after
+accepting the licence, then set it as an environment variable before running the
+TabPFN script:
+
+```bash
+export TABPFN_TOKEN="your_prior_labs_token"
+```
+
+On Windows PowerShell:
+
+```powershell
+$env:TABPFN_TOKEN = "your_prior_labs_token"
+```
+
+For offline or restricted-compute environments, manually download the model
+weights through the Prior Labs interface and set:
+
+```bash
+export TABPFN_MODEL_CACHE_DIR=/path/to/tabpfn-weights
+```
+
+Do not commit `TABPFN_TOKEN`, downloaded model weights, or local cache
+directories to this repository.
 
 ## Data
 
