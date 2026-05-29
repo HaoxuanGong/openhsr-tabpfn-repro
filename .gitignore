@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Downloaded public data and generated outputs.
+data/*
+!data/README.md
+!data/.gitkeep
+results/*
+!results/.gitkeep
+
+# Local system files.
+.DS_Store
+Thumbs.db
+

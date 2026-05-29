@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the accompanying manuscript and the OpenHSR dataset."
+title: "OpenHSR TabPFN Reproducibility Code"
+authors:
+  - family-names: "Gong"
+    given-names: "Haoxuan"
+date-released: 2026-05-29
+references:
+  - type: dataset
+    title: "Open Health Star Rating (OpenHSR)"
+    authors:
+      - family-names: "N'kam Suguem"
+        given-names: "F."
+      - family-names: "Lafargue"
+        given-names: "V."
+    year: 2025
+    doi: "10.5281/zenodo.17469191"
