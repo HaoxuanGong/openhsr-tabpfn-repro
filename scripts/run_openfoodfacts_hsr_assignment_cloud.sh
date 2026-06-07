@@ -8,12 +8,55 @@
 #
 # Purpose:
 #   This runner installs the required Python environment when requested and
-#   executes scripts/assign_openfoodfacts_hsr_with_full_contexts.py on a cloud
-#   GPU server. It is designed for a high-memory CUDA server, including Nvidia
-#   Blackwell systems with large VRAM.
+#   executes the full OFF assignment script on a cloud GPU server. It is designed
+#   for a high-memory CUDA server, including Nvidia Blackwell systems with large
+#   VRAM.
+#
+# Dataset(s):
+#   - Source files:
+#       DATA_CSV: proprietary/local HSR-labelled context data
+#       OPENHSR_CSV: OpenHSR labelled context data
+#       OFF_DATA: Open Food Facts product export
+#   - Inclusion criteria:
+#       Products readable by the OFF assignment script after field mapping.
+#   - Exclusion criteria:
+#       Controlled by script flags such as REQUIRE_PRODUCT_NAME and
+#       MIN_NONMISSING_NUTRIENTS.
+#   - Target variable:
+#       Model-derived Health Star Rating pseudo-label.
+#
+# HSR Assumptions:
+#   - HSR algorithm version:
+#       Learned from labelled context rows; this runner does not implement the
+#       rule calculator directly.
+#   - Treatment of missing nutrition fields:
+#       Controlled by the assignment script feature mapping and quality labels.
+#
+# Model / Method:
+#   - Model type:
+#       TabPFN regressor with optional multi-seed aggregation.
+#   - Feature set:
+#       Nutrient fields, mapped categorical/text fields, and optional text-SVD
+#       features as configured below.
+#   - Random seed(s):
+#       SEEDS environment variable, default 42,101,202,303,404.
+#
+# Hardware Used:
+#   - GPU:
+#       CUDA-capable GPU recommended; developed for large-memory Nvidia server.
+#
+# Software Environment:
+#   - Environment file:
+#       requirements-model-benchmark.txt
+#
+# Outputs:
+#   - Tables:
+#       OUTPUT_DIR/predictions/*.csv.gz and summary CSV files.
 #
 # Reproducibility Notes:
-#   Run from repository or bundle root:
+#   This public repository does not ship proprietary labelled data or TabPFN
+#   weights/tokens. The full assignment script may also be supplied from the
+#   private manuscript workspace or cloud bundle. Run from repository/bundle root:
 #     INSTALL_DEPS=1 OFF_DATA=/path/to/openfoodfacts-products.csv.gz bash scripts/run_openfoodfacts_hsr_assignment_cloud.sh
 #
 # Limitations:
@@ -58,12 +101,20 @@ fi
 
 export TABPFN_NO_BROWSER="${TABPFN_NO_BROWSER:-1}"
 
+ASSIGN_SCRIPT="${ASSIGN_SCRIPT:-scripts/assign_openfoodfacts_hsr_with_full_contexts.py}"
 DATA_CSV="${DATA_CSV:-data/WW_Readable_Parent_2025-11_hsr_clean_model_features.csv}"
 OPENHSR_CSV="${OPENHSR_CSV:-data/OpenHSR.csv}"
 OFF_DATA="${OFF_DATA:-data/OpenFoodFacts_clean_sample.csv}"
 OFF_DOWNLOAD_URL="${OFF_DOWNLOAD_URL:-https://static.openfoodfacts.org/data/en.openfoodfacts.org.products.csv.gz}"
 OFF_USER_AGENT="${OFF_USER_AGENT:-HSR-Prediction/1.0 research-bulk-download}"
 DOWNLOAD_OFF="${DOWNLOAD_OFF:-auto}"
+
+if [[ ! -f "${ASSIGN_SCRIPT}" ]]; then
+  echo "Missing assignment script: ${ASSIGN_SCRIPT}"
+  echo "This public repo intentionally does not include private labelled data."
+  echo "If you are reproducing the manuscript run, copy the full assignment script and helper modules from the private workspace/cloud bundle, or set ASSIGN_SCRIPT=/path/to/script."
+  exit 1
+fi
 
 if [[ ! -f "${DATA_CSV}" ]]; then
   echo "Missing DATA_CSV: ${DATA_CSV}"
@@ -105,7 +156,7 @@ if [[ ! -f "${OFF_DATA}" ]]; then
 fi
 
 COMMAND=(
-  "${PYTHON_BIN}" scripts/assign_openfoodfacts_hsr_with_full_contexts.py
+  "${PYTHON_BIN}" "${ASSIGN_SCRIPT}"
   --our-data "${DATA_CSV}"
   --openhsr-data "${OPENHSR_CSV}"
   --off-data "${OFF_DATA}"
