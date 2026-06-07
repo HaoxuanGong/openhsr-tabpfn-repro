@@ -1,4 +1,5 @@
 .venv/
+.venv-*/
 __pycache__/
 *.pyc
 
@@ -8,6 +9,21 @@ data/*
 !data/.gitkeep
 results/*
 !results/.gitkeep
+openfood/
+cloud_run/
+*.csv.gz
+*.csv.part
+*.gz.part
+
+# Model caches and credentials.
+.env
+*.env
+TABPFN_TOKEN*
+*token*
+.cache/
+model_cache/
+tabpfn_cache/
+.tabpfn/
 
 # Local system files.
 .DS_Store
