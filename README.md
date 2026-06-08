@@ -1,32 +1,33 @@
 # OpenHSR TabPFN Reproducibility Code
 
-This repository contains code and documentation for Health Star Rating (HSR)
-experiments accompanying the manuscript. The OpenHSR analyses are public-data
-only. The Open Food Facts (OFF) release material documents compact model-derived
-HSR pseudo-label outputs without releasing proprietary labelled context data,
-TabPFN tokens, model weights, or full OFF product metadata.
+This repository contains code and released outputs for Health Star Rating (HSR)
+prediction experiments on tabular food product data. It includes OpenHSR-only
+experiments, an OpenHSR split-sensitivity audit, and a compact Open Food Facts
+(OFF) prediction table keyed by product code.
 
-The code supports three analyses/release workflows:
+The repository is organised around three workflows:
 
 1. **OpenHSR-only TabPFN-3 evaluation**
    - Repeated random 50-product held-out splits.
    - Nested greedy feature selection using only OpenHSR fields.
-   - TabPFN-3 regressor evaluated on the held-out OpenHSR products.
+   - TabPFN-3 regression on the held-out OpenHSR products.
 
 2. **OpenHSR baseline split-sensitivity audit**
    - Reimplementation of the executable classical-model section of the OpenHSR
      notebook.
-   - Repeated random 80/20 splits to quantify variability from the small
-     OpenHSR test set.
+   - Repeated random 80/20 splits to quantify how much the small OpenHSR test
+     set affects reported performance.
 
-3. **Open Food Facts HSR pseudo-label release**
-   - Compact public prediction table keyed by OFF product code.
-   - Product names, brands, categories, nutrient values, private context rows,
-     and model credentials are intentionally omitted.
-   - Release metadata and checksums are in
+3. **Open Food Facts HSR prediction table**
+   - A compact table of model-derived HSR predictions for OFF products.
+   - Each row is keyed by OFF product `code`, so product metadata can be joined
+     from the official OFF export.
+   - Release files and checksums are in
      `release/openfoodfacts_hsr_assignment_public/`.
 
-No proprietary product records are required for the OpenHSR-only analyses.
+The OpenHSR workflows can be rerun with public data. The OFF prediction table is
+provided as a released output; the labelled context data used for the manuscript
+run are not part of this repository.
 
 ## Installation
 
@@ -46,15 +47,13 @@ pip install -r requirements.txt
 
 ## TabPFN-3 Model Access
 
-This repository does not distribute TabPFN-3 model weights or any model-access
-token. Users must obtain their own TabPFN-3 access from Prior Labs and comply
-with the TABPFN-3 licence.
+TabPFN-3 model weights and access tokens are not included. To rerun TabPFN-based
+analyses, install the `tabpfn` package, obtain access from Prior Labs, and follow
+their licence terms.
 
-For local interactive use, the `tabpfn` package can open a browser on first use
-so the user can log in, accept the licence, and cache the authentication token
-locally. For headless servers or notebooks, create a Prior Labs API key after
-accepting the licence, then set it as an environment variable before running the
-TabPFN script:
+For local interactive use, the package can open a browser on first use so you
+can log in and accept the licence. On headless servers, create a Prior Labs API
+key and set it before running TabPFN scripts:
 
 ```bash
 export TABPFN_TOKEN="your_prior_labs_token"
@@ -66,19 +65,11 @@ On Windows PowerShell:
 $env:TABPFN_TOKEN = "your_prior_labs_token"
 ```
 
-For offline or restricted-compute environments, manually download the model
-weights through the Prior Labs interface and set:
-
-```bash
-export TABPFN_MODEL_CACHE_DIR=/path/to/tabpfn-weights
-```
-
-Do not commit `TABPFN_TOKEN`, downloaded model weights, or local cache
-directories to this repository.
+Do not commit access tokens, downloaded model weights, or local cache directories.
 
 ## Data
 
-The experiments use the public OpenHSR dataset:
+The OpenHSR experiments use the public OpenHSR dataset:
 
 > N'kam Suguem, F., & Lafargue, V. (2025). Open Health Star Rating (OpenHSR)
 > (Version v1) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.17469191
@@ -132,20 +123,19 @@ Key outputs:
 - `results/openhsr_baseline_random_split_audit/reported_table_comparison.csv`
 - `results/openhsr_baseline_random_split_audit/openhsr_random_split_audit.pdf`
 
-## Open Food Facts HSR Release
+## Open Food Facts HSR Predictions
 
-The compact public OFF prediction file is tracked in this repository:
+The compact OFF prediction file is tracked in this repository:
 
-- Repository path:
-  `release/openfoodfacts_hsr_assignment_public/openfoodfacts_hsr_assignments_public_seed42.csv.gz`
-- Rows: `4,532,767`
-- Join key: Open Food Facts product `code`
+```text
+release/openfoodfacts_hsr_assignment_public/openfoodfacts_hsr_assignments_public.csv.gz
+```
 
-It contains 4,532,767 rows keyed by OFF product code and includes only assigned
-HSR pseudo-labels, mapped-nutrient counts, and context-agreement fields. The two
-assigned-HSR columns come from a private-labelled-data context and a
-private-labelled-data-plus-OpenHSR context. It intentionally omits OFF product
-names, brands, categories, nutrition fields, and private product records.
+It contains 4,532,767 rows. The join key is Open Food Facts product `code`.
+The table contains predicted HSR values from two context settings, mapped
+nutrient counts, and agreement fields comparing the two predictions. Product
+names, brands, categories, and nutrient values can be joined from the official
+Open Food Facts export when needed.
 
 To rebuild the compact file from the full local/cloud prediction outputs:
 
@@ -153,27 +143,28 @@ To rebuild the compact file from the full local/cloud prediction outputs:
 python scripts/build_public_off_prediction_release.py
 ```
 
-To publish it as a GitHub release asset from an authenticated machine:
+To publish the same file as a GitHub release asset from an authenticated machine:
 
 ```bash
 bash scripts/upload_public_off_prediction_release_to_github.sh
 ```
 
-The generated file SHA256 is recorded in
+The file checksum is recorded in
 `release/openfoodfacts_hsr_assignment_public/SHA256SUMS.txt`.
 
 ## Reproducibility Notes
 
-- The TabPFN script performs feature selection inside each outer split. Held-out
-  test labels are never used for feature selection, text encoding, or context.
-- The baseline audit follows the executable preprocessing pattern in the
-  OpenHSR notebook: one-hot encode `category`, select numeric and boolean
-  columns, scale train/test using a train-fitted `StandardScaler`, then fit each
-  model on the training fold.
+- The TabPFN OpenHSR script performs feature selection inside each outer split.
+  Held-out test labels are never used for feature selection, text encoding, or
+  model context.
+- The baseline audit follows the executable preprocessing pattern in the OpenHSR
+  notebook: one-hot encode `category`, select numeric and boolean columns, scale
+  train/test using a train-fitted `StandardScaler`, then fit each model on the
+  training fold.
 - The upstream notebook variable named `XGBR` is implemented as scikit-learn
   `GradientBoostingRegressor`, not the external `xgboost` package.
-- OFF `assigned_hsr` values are model-derived pseudo-labels, not official OFF
-  labels and not direct HSR-calculator outputs.
+- OFF `assigned_hsr` values are model-derived predictions, not official Open
+  Food Facts labels and not direct HSR-calculator outputs.
 
 ## Licences and Attribution
 
