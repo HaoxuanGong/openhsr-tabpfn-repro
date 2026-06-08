@@ -12,5 +12,4 @@ You can download it with:
 python scripts/download_openhsr.py --output data/OpenHSR.csv
 ```
 
-The repository intentionally does not include any proprietary product records.
-
+Private product records are not stored in this repository.
