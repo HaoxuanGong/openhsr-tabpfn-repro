@@ -9,10 +9,10 @@
     "cloud_run\\openfoodfacts_hsr_assignment_bundle\\results\\openfoodfacts_hsr_assignment_full_contexts\\predictions\\openfoodfacts_hsr_assignments_our_data_plus_openhsr_context.csv.gz": "733a513bc2ac1621ae917a6be70cbdb1576d3f8844b30c6d2cbcbd8cc3ec4682"
   },
   "output_files": {
-    "public_predictions": "release\\openfoodfacts_hsr_assignment_public\\openfoodfacts_hsr_assignments_public_seed42.csv.gz"
+    "public_predictions": "release\\openfoodfacts_hsr_assignment_public\\openfoodfacts_hsr_assignments_public.csv.gz"
   },
   "output_sha256": {
-    "openfoodfacts_hsr_assignments_public_seed42.csv.gz": "0879fec90a14f6dee0ee8ce89a3ae0048e2abb1882d7c58001c373f4f357b194"
+    "openfoodfacts_hsr_assignments_public.csv.gz": "0879fec90a14f6dee0ee8ce89a3ae0048e2abb1882d7c58001c373f4f357b194"
   },
   "row_count": 4532767,
   "missing_code_count": 0,
@@ -55,5 +55,5 @@
     "assigned_hsr_context_abs_diff",
     "assigned_hsr_context_same"
   ],
-  "interpretation": "assigned_hsr columns are model-derived HSR pseudo-labels, not official Open Food Facts labels or direct HSR-calculator outputs."
+  "interpretation": "assigned_hsr columns are model-derived HSR predictions, not official Open Food Facts labels or direct HSR-calculator outputs."
 }
