@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-06-08T02:55:57.101350+00:00",
+  "created_utc": "2026-06-08T04:13:55.484540+00:00",
   "source_files": {
     "our_data_context": "cloud_run\\openfoodfacts_hsr_assignment_bundle\\results\\openfoodfacts_hsr_assignment_full_contexts\\predictions\\openfoodfacts_hsr_assignments_our_data_context.csv.gz",
     "our_data_plus_openhsr_context": "cloud_run\\openfoodfacts_hsr_assignment_bundle\\results\\openfoodfacts_hsr_assignment_full_contexts\\predictions\\openfoodfacts_hsr_assignments_our_data_plus_openhsr_context.csv.gz"
@@ -9,28 +9,16 @@
     "cloud_run\\openfoodfacts_hsr_assignment_bundle\\results\\openfoodfacts_hsr_assignment_full_contexts\\predictions\\openfoodfacts_hsr_assignments_our_data_plus_openhsr_context.csv.gz": "733a513bc2ac1621ae917a6be70cbdb1576d3f8844b30c6d2cbcbd8cc3ec4682"
   },
   "output_files": {
-    "public_predictions": "release\\openfoodfacts_hsr_assignment_public\\openfoodfacts_hsr_assignments_public_seed42.csv.gz",
-    "summary_by_quality": "release\\openfoodfacts_hsr_assignment_public\\summary_by_quality.csv"
+    "public_predictions": "release\\openfoodfacts_hsr_assignment_public\\openfoodfacts_hsr_assignments_public_seed42.csv.gz"
   },
   "output_sha256": {
-    "openfoodfacts_hsr_assignments_public_seed42.csv.gz": "4597aa34246a6dce2e9248f0af135f0db93d899bde3a30714666548f7af1d91f",
-    "summary_by_quality.csv": "63b8b1a9f7549aa10cd7607d3052b40578d6d5778a2ab8cc689480c3e27c01bf"
+    "openfoodfacts_hsr_assignments_public_seed42.csv.gz": "0879fec90a14f6dee0ee8ce89a3ae0048e2abb1882d7c58001c373f4f357b194"
   },
   "row_count": 4532767,
   "missing_code_count": 0,
   "context_exact_agreement_count": 2022462,
   "context_exact_agreement_fraction": 0.4461870641045525,
   "context_mean_absolute_difference": 0.326773910946669,
-  "assignment_quality_counts": {
-    "our_data_context": {
-      "high": 2207405,
-      "low_feature_count": 2325362
-    },
-    "our_data_plus_openhsr_context": {
-      "high": 2207405,
-      "low_feature_count": 2325362
-    }
-  },
   "assigned_hsr_counts": {
     "our_data_context": {
       "0.5": 97953,
@@ -61,13 +49,11 @@
     "off_source_row_id",
     "code",
     "assigned_hsr_our_data_context",
-    "assignment_quality_our_data_context",
     "mapped_nutrient_count_our_data_context",
     "assigned_hsr_our_data_plus_openhsr_context",
-    "assignment_quality_our_data_plus_openhsr_context",
     "mapped_nutrient_count_our_data_plus_openhsr_context",
     "assigned_hsr_context_abs_diff",
     "assigned_hsr_context_same"
   ],
-  "interpretation": "assigned_hsr columns are model-derived HSR pseudo-labels. assignment_quality is a release quality flag; with a single seed it primarily reflects mapped nutrient-field completeness."
+  "interpretation": "assigned_hsr columns are model-derived HSR pseudo-labels, not official Open Food Facts labels or direct HSR-calculator outputs."
 }

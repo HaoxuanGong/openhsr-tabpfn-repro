@@ -92,26 +92,6 @@ python scripts/download_openhsr.py --output data/OpenHSR.csv
 If the download URL changes, manually download `OpenHSR.csv` from the OpenHSR
 Zenodo or GitHub repository and place it at `data/OpenHSR.csv`.
 
-## Open Food Facts HSR Predictions
-
-This repository also hosts a public GitHub release of model-derived HSR
-predictions for Open Food Facts products:
-
-- Release: [off-hsr-assignments-seed42](https://github.com/HaoxuanGong/openhsr-tabpfn-repro/releases/tag/off-hsr-assignments-seed42)
-- Main asset: `openfoodfacts_hsr_assignments_public_seed42.csv.gz`
-- Rows: `4,532,767`
-- Join key: Open Food Facts product `code`
-
-The release contains two assigned-HSR columns: one produced using the private
-labelled dataset as TabPFN context, and one produced using the private labelled
-dataset plus OpenHSR as context. Product names, brands, categories, nutrient
-values, and private product records are not redistributed in the public file.
-
-The assigned HSR values are model-derived pseudo-labels, not official Open Food
-Facts labels and not direct HSR-calculator outputs. Readers can join the file to
-the official Open Food Facts export by `code` for downstream inspection or
-independent analysis.
-
 ## Run OpenHSR-only TabPFN-3
 
 ```bash
@@ -154,14 +134,21 @@ Key outputs:
 
 ## Open Food Facts HSR Release
 
-The compact public OFF release file is:
+The compact public OFF prediction file is tracked in this repository and
+documented as GitHub release material:
 
-- `release/openfoodfacts_hsr_assignment_public/openfoodfacts_hsr_assignments_public_seed42.csv.gz`
+- Repository path:
+  `release/openfoodfacts_hsr_assignment_public/openfoodfacts_hsr_assignments_public_seed42.csv.gz`
+- Release:
+  [off-hsr-assignments-seed42](https://github.com/HaoxuanGong/openhsr-tabpfn-repro/releases/tag/off-hsr-assignments-seed42)
+- Rows: `4,532,767`
+- Join key: Open Food Facts product `code`
 
 It contains 4,532,767 rows keyed by OFF product code and includes only assigned
-HSR pseudo-labels, assignment-quality flags, mapped-nutrient counts, and
-context-agreement fields. It intentionally omits OFF product names, brands,
-categories, and nutrition fields.
+HSR pseudo-labels, mapped-nutrient counts, and context-agreement fields. The two
+assigned-HSR columns come from a private-labelled-data context and a
+private-labelled-data-plus-OpenHSR context. It intentionally omits OFF product
+names, brands, categories, nutrition fields, and private product records.
 
 To rebuild the compact file from the full local/cloud prediction outputs:
 
