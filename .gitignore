@@ -12,6 +12,7 @@ results/*
 openfood/
 cloud_run/
 *.csv.gz
+!release/openfoodfacts_hsr_assignment_public/*.csv.gz
 *.csv.part
 *.gz.part
 
