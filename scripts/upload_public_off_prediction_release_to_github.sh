@@ -1,45 +1,44 @@
 #!/usr/bin/env bash
 # ============================================================
-# Experiment: Upload public Open Food Facts HSR assignment release
+# Experiment: Upload public Open Food Facts HSR prediction release
 # Paper Section / Research Question:
-#   Makes the compact Open Food Facts HSR pseudo-label outputs publicly
-#   accessible without requiring readers to rerun the assignment experiment.
+#   Makes the compact Open Food Facts HSR prediction output publicly accessible
+#   without requiring readers to rerun the prediction experiment.
 #
 # Purpose:
-#   Uploads the compact public OFF HSR assignment CSV.GZ and metadata files as
+#   Uploads the compact public OFF HSR prediction CSV.GZ and metadata files as
 #   GitHub release assets. This keeps the repository clone lightweight while
 #   giving readers direct access to the prediction results.
 #
 # Dataset(s):
 #   - Source files:
 #       release/openfoodfacts_hsr_assignment_public/
-#       openfoodfacts_hsr_assignments_public_seed42.csv.gz
+#       openfoodfacts_hsr_assignments_public.csv.gz
 #       release/openfoodfacts_hsr_assignment_public/metadata.json
 #       release/openfoodfacts_hsr_assignment_public/SHA256SUMS.txt
 #       release/openfoodfacts_hsr_assignment_public/README.md
 #   - Retailer(s):
-#       Open Food Facts product identifiers; private/proprietary context data
-#       are not uploaded.
+#       Open Food Facts product identifiers.
 #   - Inclusion criteria:
 #       Rows included in the compact public release file.
 #   - Exclusion criteria:
 #       Not modified by this upload script.
 #   - Target variable:
-#       Model-derived Health Star Rating pseudo-labels.
+#       Model-derived Health Star Rating predictions.
 #   - Unit convention:
 #       Not applicable to this upload script.
 #
 # HSR Assumptions:
 #   - HSR algorithm version:
-#       Inherited from the upstream OFF assignment experiment.
+#       Inherited from the upstream OFF prediction experiment.
 #   - Category mapping:
-#       Inherited from the upstream OFF assignment experiment.
+#       Inherited from the upstream OFF prediction experiment.
 #   - Treatment of ambiguous categories:
-#       Inherited from the upstream OFF assignment experiment.
+#       Inherited from the upstream OFF prediction experiment.
 #   - Treatment of missing nutrition fields:
 #       Captured in mapped_nutrient_count fields.
 #   - Treatment of ineligible products:
-#       Values are pseudo-labels unless independently validated.
+#       Values are predictions unless independently validated.
 #
 # Model / Method:
 #   - Model type:
@@ -51,13 +50,13 @@
 #   - Train/validation/test split:
 #       Not applicable.
 #   - Random seed(s):
-#       Inherited from the compact release file, normally seed 42.
+#       Inherited from the compact release file; not used by this upload step.
 #
 # Hyperparameters:
 #   - GitHub repository:
 #       GITHUB_REPO, default HaoxuanGong/openhsr-tabpfn-repro.
 #   - Release tag:
-#       RELEASE_TAG, default off-hsr-assignments-seed42.
+#       RELEASE_TAG, default off-hsr-predictions.
 #   - Release directory:
 #       RELEASE_DIR, default release/openfoodfacts_hsr_assignment_public.
 #
@@ -127,10 +126,10 @@
 set -euo pipefail
 
 GITHUB_REPO="${GITHUB_REPO:-HaoxuanGong/openhsr-tabpfn-repro}"
-RELEASE_TAG="${RELEASE_TAG:-off-hsr-assignments-seed42}"
-RELEASE_TITLE="${RELEASE_TITLE:-Open Food Facts HSR predictions, seed 42}"
+RELEASE_TAG="${RELEASE_TAG:-off-hsr-predictions}"
+RELEASE_TITLE="${RELEASE_TITLE:-Open Food Facts HSR predictions}"
 RELEASE_DIR="${RELEASE_DIR:-release/openfoodfacts_hsr_assignment_public}"
-PREDICTION_FILE="${PREDICTION_FILE:-${RELEASE_DIR}/openfoodfacts_hsr_assignments_public_seed42.csv.gz}"
+PREDICTION_FILE="${PREDICTION_FILE:-${RELEASE_DIR}/openfoodfacts_hsr_assignments_public.csv.gz}"
 
 if ! command -v gh >/dev/null 2>&1; then
   echo "Missing GitHub CLI: gh"
@@ -172,4 +171,4 @@ gh release upload "${RELEASE_TAG}" \
   "${RELEASE_DIR}/metadata.json" \
   "${RELEASE_DIR}/SHA256SUMS.txt"
 
-echo "Uploaded public OFF HSR assignment release assets to ${GITHUB_REPO}:${RELEASE_TAG}"
+echo "Uploaded public OFF HSR prediction release assets to ${GITHUB_REPO}:${RELEASE_TAG}"
