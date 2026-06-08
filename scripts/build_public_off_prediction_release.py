@@ -6,8 +6,8 @@
 #
 # Purpose:
 #   Converts the full OFF prediction outputs into a compact public artifact that
-#   contains product identifiers, assigned HSR pseudo-labels, assignment-quality
-#   flags, context-comparison fields, checksums, and release documentation.
+#   contains product identifiers, assigned HSR pseudo-labels, mapped nutrient
+#   counts, context-comparison fields, checksums, and release documentation.
 #
 # Dataset(s):
 #   - Source files:
@@ -23,8 +23,8 @@
 #   - Inclusion criteria:
 #       Rows present in both final OFF assignment files.
 #   - Exclusion criteria:
-#       None in this release builder; upstream OFF assignment flags low-feature
-#       rows rather than excluding them by default.
+#       None in this release builder; rows are inherited from the upstream OFF
+#       assignment outputs.
 #   - Target variable:
 #       Model-derived HSR pseudo-label, rounded to valid 0.5-star increments.
 #   - Unit convention:
@@ -40,8 +40,8 @@
 #   - Treatment of ambiguous categories:
 #       Inherited from the upstream OFF assignment script and not reprocessed.
 #   - Treatment of missing nutrition fields:
-#       Inherited from upstream predictions; this builder preserves
-#       mapped_nutrient_count and assignment_quality.
+#       Inherited from upstream predictions; this builder preserves mapped
+#       nutrient counts but does not publish upstream row flags.
 #   - Treatment of ineligible products:
 #       Inherited from upstream predictions; assigned values should be described
 #       as pseudo-labels unless independently verified.
@@ -52,7 +52,7 @@
 #       OFF assignment outputs.
 #   - Feature set:
 #       Release fields only: OFF row id, OFF product code, assigned HSRs,
-#       mapped nutrient counts, assignment quality, and context-agreement fields.
+#       mapped nutrient counts, and context-agreement fields.
 #   - Preprocessing:
 #       Chunked CSV reading, row-order validation, and compact CSV.GZ writing.
 #   - Train/validation/test split:
@@ -69,13 +69,12 @@
 #
 # Evaluation:
 #   - Metrics:
-#       Row counts, missing-code counts, HSR distributions, quality-label
-#       distributions, context exact agreement, and mean absolute context
-#       difference.
+#       Row counts, missing-code counts, HSR distributions, context exact
+#       agreement, and mean absolute context difference.
 #   - Error tolerance:
 #       Not applicable in this post-processing script.
 #   - Subgroup analyses:
-#       Assignment-quality summaries only.
+#       None.
 #   - Robustness tests:
 #       Row alignment is validated between the two context outputs.
 #
@@ -118,7 +117,6 @@
 #   - Tables:
 #       release/openfoodfacts_hsr_assignment_public/
 #       openfoodfacts_hsr_assignments_public_seed42.csv.gz
-#       release/openfoodfacts_hsr_assignment_public/summary_by_quality.csv
 #   - Figures:
 #       None.
 #   - Models:
@@ -135,9 +133,7 @@
 #
 # Limitations:
 #   The assigned HSR values are model-derived pseudo-labels, not official OFF
-#   labels or direct HSR-calculator outputs. With a single upstream seed,
-#   assignment_quality mostly reflects nutrient-field completeness rather than
-#   multi-seed model uncertainty.
+#   labels or direct HSR-calculator outputs.
 # ============================================================
 
 from __future__ import annotations
@@ -176,7 +172,6 @@ USECOLS = [
     "code",
     "mapped_nutrient_count",
     "assigned_hsr",
-    "assignment_quality",
 ]
 
 
@@ -231,7 +226,6 @@ def build_release(args: argparse.Namespace) -> dict[str, object]:
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     output_csv = args.output_dir / args.output_name
-    summary_csv = args.output_dir / "summary_by_quality.csv"
     metadata_json = args.output_dir / "metadata.json"
     readme_path = args.output_dir / "README.md"
     checksums_path = args.output_dir / "SHA256SUMS.txt"
@@ -241,7 +235,6 @@ def build_release(args: argparse.Namespace) -> dict[str, object]:
         "code": "string",
         "mapped_nutrient_count": "Int64",
         "assigned_hsr": "Float64",
-        "assignment_quality": "string",
     }
 
     our_reader = pd.read_csv(
@@ -257,8 +250,6 @@ def build_release(args: argparse.Namespace) -> dict[str, object]:
         chunksize=args.chunksize,
     )
 
-    quality_our = Counter()
-    quality_plus = Counter()
     hsr_our = Counter()
     hsr_plus = Counter()
     rows = 0
@@ -297,16 +288,10 @@ def build_release(args: argparse.Namespace) -> dict[str, object]:
                     "off_source_row_id": our_ids,
                     "code": our_codes.replace("", pd.NA),
                     "assigned_hsr_our_data_context": assigned_our,
-                    "assignment_quality_our_data_context": our_chunk[
-                        "assignment_quality"
-                    ].reset_index(drop=True),
                     "mapped_nutrient_count_our_data_context": our_chunk[
                         "mapped_nutrient_count"
                     ].reset_index(drop=True),
                     "assigned_hsr_our_data_plus_openhsr_context": assigned_plus,
-                    "assignment_quality_our_data_plus_openhsr_context": plus_chunk[
-                        "assignment_quality"
-                    ].reset_index(drop=True),
                     "mapped_nutrient_count_our_data_plus_openhsr_context": plus_chunk[
                         "mapped_nutrient_count"
                     ].reset_index(drop=True),
@@ -321,36 +306,10 @@ def build_release(args: argparse.Namespace) -> dict[str, object]:
             missing_code += int(out["code"].isna().sum())
             context_same += int(same.sum())
             context_abs_diff_sum += float(abs_diff.sum())
-            update_counter(quality_our, out["assignment_quality_our_data_context"])
-            update_counter(
-                quality_plus,
-                out["assignment_quality_our_data_plus_openhsr_context"],
-            )
             update_counter(hsr_our, out["assigned_hsr_our_data_context"])
             update_counter(hsr_plus, out["assigned_hsr_our_data_plus_openhsr_context"])
 
-    summary = pd.DataFrame(
-        [
-            {
-                "context": "our_data_context",
-                "assignment_quality": quality,
-                "row_count": count,
-            }
-            for quality, count in compact_counts(quality_our).items()
-        ]
-        + [
-            {
-                "context": "our_data_plus_openhsr_context",
-                "assignment_quality": quality,
-                "row_count": count,
-            }
-            for quality, count in compact_counts(quality_plus).items()
-        ]
-    )
-    summary.to_csv(summary_csv, index=False)
-
     output_hash = sha256_file(output_csv)
-    summary_hash = sha256_file(summary_csv)
     source_hashes = {}
     if not args.skip_source_hashes:
         source_hashes = {
@@ -369,11 +328,9 @@ def build_release(args: argparse.Namespace) -> dict[str, object]:
         "source_sha256": source_hashes,
         "output_files": {
             "public_predictions": str(output_csv),
-            "summary_by_quality": str(summary_csv),
         },
         "output_sha256": {
             output_csv.name: output_hash,
-            summary_csv.name: summary_hash,
         },
         "row_count": rows,
         "missing_code_count": missing_code,
@@ -382,10 +339,6 @@ def build_release(args: argparse.Namespace) -> dict[str, object]:
         "context_mean_absolute_difference": (
             context_abs_diff_sum / rows if rows else None
         ),
-        "assignment_quality_counts": {
-            "our_data_context": compact_counts(quality_our),
-            "our_data_plus_openhsr_context": compact_counts(quality_plus),
-        },
         "assigned_hsr_counts": {
             "our_data_context": compact_counts(hsr_our),
             "our_data_plus_openhsr_context": compact_counts(hsr_plus),
@@ -394,18 +347,15 @@ def build_release(args: argparse.Namespace) -> dict[str, object]:
             "off_source_row_id",
             "code",
             "assigned_hsr_our_data_context",
-            "assignment_quality_our_data_context",
             "mapped_nutrient_count_our_data_context",
             "assigned_hsr_our_data_plus_openhsr_context",
-            "assignment_quality_our_data_plus_openhsr_context",
             "mapped_nutrient_count_our_data_plus_openhsr_context",
             "assigned_hsr_context_abs_diff",
             "assigned_hsr_context_same",
         ],
         "interpretation": (
-            "assigned_hsr columns are model-derived HSR pseudo-labels. "
-            "assignment_quality is a release quality flag; with a single seed it "
-            "primarily reflects mapped nutrient-field completeness."
+            "assigned_hsr columns are model-derived HSR pseudo-labels, not "
+            "official Open Food Facts labels or direct HSR-calculator outputs."
         ),
     }
     metadata_json.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
@@ -414,7 +364,6 @@ def build_release(args: argparse.Namespace) -> dict[str, object]:
         "\n".join(
             [
                 f"{output_hash}  {output_csv.name}",
-                f"{summary_hash}  {summary_csv.name}",
                 f"{sha256_file(metadata_json)}  {metadata_json.name}",
             ]
         )
@@ -422,10 +371,10 @@ def build_release(args: argparse.Namespace) -> dict[str, object]:
         encoding="utf-8",
     )
 
-    readme = f"""# Open Food Facts HSR Assignment Public Release
+    readme = f"""# Open Food Facts HSR Prediction Public Release
 
 This folder documents the compact public output for the Open Food Facts HSR
-assignment experiment. The main CSV.GZ may be tracked in this folder or attached
+prediction experiment. The main CSV.GZ may be tracked in this folder or attached
 as a GitHub release asset, depending on repository-size policy. The full
 internal prediction files include product names, brands, categories, and
 nutrient fields; those fields are intentionally omitted from this public
@@ -449,11 +398,8 @@ Facts labels and not direct HSR-calculator outputs.
   context data.
 - `assigned_hsr_our_data_plus_openhsr_context`: HSR assigned using private
   labelled context data plus OpenHSR.
-- `assignment_quality_*`: `high` or `low_feature_count` for the current
-  seed-42 release. Multi-seed instability labels are only meaningful for
-  multi-seed runs.
 - `mapped_nutrient_count_*`: number of mapped nutrient fields available to the
-  upstream assignment model.
+  upstream prediction model.
 - `assigned_hsr_context_abs_diff`: absolute difference between the two context
   assignments.
 - `assigned_hsr_context_same`: whether the two context assignments are exactly

@@ -30,7 +30,7 @@
 #       Learned from labelled context rows; this runner does not implement the
 #       rule calculator directly.
 #   - Treatment of missing nutrition fields:
-#       Controlled by the assignment script feature mapping and quality labels.
+#       Controlled by the assignment script feature mapping.
 #
 # Model / Method:
 #   - Model type:
@@ -172,7 +172,6 @@ COMMAND=(
   --text-svd-components "${TEXT_SVD_COMPONENTS:-16}"
   --text-max-features "${TEXT_MAX_FEATURES:-2500}"
   --min-nonmissing-nutrients "${MIN_NONMISSING_NUTRIENTS:-0}"
-  --low-feature-count-threshold "${LOW_FEATURE_COUNT_THRESHOLD:-4}"
   --max-off-rows "${MAX_OFF_ROWS:-0}"
   --off-read-chunksize "${OFF_READ_CHUNKSIZE:-50000}"
   --off-on-bad-lines "${OFF_ON_BAD_LINES:-skip}"
@@ -180,8 +179,6 @@ COMMAND=(
   --output-compression "${OUTPUT_COMPRESSION:-gzip}"
   --aggregation-chunksize "${AGGREGATION_CHUNKSIZE:-100000}"
   --assignment-mode "${ASSIGNMENT_MODE:-rounded_mode}"
-  --max-prediction-sd "${MAX_PREDICTION_SD:-0.20}"
-  --min-rounded-agreement "${MIN_ROUNDED_AGREEMENT:-0.80}"
 )
 
 if [[ "${NUMERIC_ONLY:-0}" == "1" ]]; then

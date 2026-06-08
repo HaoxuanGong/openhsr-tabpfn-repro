@@ -15,7 +15,6 @@
 #       release/openfoodfacts_hsr_assignment_public/
 #       openfoodfacts_hsr_assignments_public_seed42.csv.gz
 #       release/openfoodfacts_hsr_assignment_public/metadata.json
-#       release/openfoodfacts_hsr_assignment_public/summary_by_quality.csv
 #       release/openfoodfacts_hsr_assignment_public/SHA256SUMS.txt
 #       release/openfoodfacts_hsr_assignment_public/README.md
 #   - Retailer(s):
@@ -38,7 +37,7 @@
 #   - Treatment of ambiguous categories:
 #       Inherited from the upstream OFF assignment experiment.
 #   - Treatment of missing nutrition fields:
-#       Captured in assignment_quality and mapped_nutrient_count fields.
+#       Captured in mapped_nutrient_count fields.
 #   - Treatment of ineligible products:
 #       Values are pseudo-labels unless independently validated.
 #
@@ -129,7 +128,7 @@ set -euo pipefail
 
 GITHUB_REPO="${GITHUB_REPO:-HaoxuanGong/openhsr-tabpfn-repro}"
 RELEASE_TAG="${RELEASE_TAG:-off-hsr-assignments-seed42}"
-RELEASE_TITLE="${RELEASE_TITLE:-Open Food Facts HSR assignments, seed 42}"
+RELEASE_TITLE="${RELEASE_TITLE:-Open Food Facts HSR predictions, seed 42}"
 RELEASE_DIR="${RELEASE_DIR:-release/openfoodfacts_hsr_assignment_public}"
 PREDICTION_FILE="${PREDICTION_FILE:-${RELEASE_DIR}/openfoodfacts_hsr_assignments_public_seed42.csv.gz}"
 
@@ -143,7 +142,6 @@ required_files=(
   "${PREDICTION_FILE}"
   "${RELEASE_DIR}/README.md"
   "${RELEASE_DIR}/metadata.json"
-  "${RELEASE_DIR}/summary_by_quality.csv"
   "${RELEASE_DIR}/SHA256SUMS.txt"
 )
 
@@ -172,7 +170,6 @@ gh release upload "${RELEASE_TAG}" \
   "${PREDICTION_FILE}" \
   "${RELEASE_DIR}/README.md" \
   "${RELEASE_DIR}/metadata.json" \
-  "${RELEASE_DIR}/summary_by_quality.csv" \
   "${RELEASE_DIR}/SHA256SUMS.txt"
 
 echo "Uploaded public OFF HSR assignment release assets to ${GITHUB_REPO}:${RELEASE_TAG}"
