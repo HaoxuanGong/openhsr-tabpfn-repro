@@ -1,13 +1,13 @@
 # ============================================================
-# Experiment: Public Open Food Facts HSR assignment release builder
+# Experiment: Public Open Food Facts HSR prediction release builder
 # Paper Section / Research Question:
 #   Supports publication of large-scale model-derived Health Star Rating
-#   assignments for Open Food Facts without requiring readers to rerun TabPFN.
+#   predictions for Open Food Facts without requiring readers to rerun TabPFN.
 #
 # Purpose:
 #   Converts the full OFF prediction outputs into a compact public artifact that
-#   contains product identifiers, assigned HSR pseudo-labels, mapped nutrient
-#   counts, context-comparison fields, checksums, and release documentation.
+#   contains product identifiers, predicted HSR values, mapped nutrient counts,
+#   context-comparison fields, checksums, and release documentation.
 #
 # Dataset(s):
 #   - Source files:
@@ -18,15 +18,15 @@
 #       openfoodfacts_hsr_assignment_full_contexts/predictions/
 #       openfoodfacts_hsr_assignments_our_data_plus_openhsr_context.csv.gz
 #   - Retailer(s):
-#       Open Food Facts for products; proprietary/private and OpenHSR rows are
-#       used only as labelled context in the upstream prediction experiment.
+#       Open Food Facts for products; manuscript labelled rows and OpenHSR rows
+#       are used only as context in the upstream prediction experiment.
 #   - Inclusion criteria:
-#       Rows present in both final OFF assignment files.
+#       Rows present in both final OFF prediction files.
 #   - Exclusion criteria:
 #       None in this release builder; rows are inherited from the upstream OFF
-#       assignment outputs.
+#       prediction outputs.
 #   - Target variable:
-#       Model-derived HSR pseudo-label, rounded to valid 0.5-star increments.
+#       Model-derived HSR prediction, rounded to valid 0.5-star increments.
 #   - Unit convention:
 #       OFF nutrient fields used upstream are per 100 g or per 100 mL according
 #       to OFF conventions and upstream mapping.
@@ -36,30 +36,30 @@
 #       Learned from the upstream labelled contexts; this builder does not run
 #       the HSR rule calculator.
 #   - Category mapping:
-#       Inherited from the upstream OFF assignment script.
+#       Inherited from the upstream OFF prediction script.
 #   - Treatment of ambiguous categories:
-#       Inherited from the upstream OFF assignment script and not reprocessed.
+#       Inherited from the upstream OFF prediction script and not reprocessed.
 #   - Treatment of missing nutrition fields:
 #       Inherited from upstream predictions; this builder preserves mapped
 #       nutrient counts but does not publish upstream row flags.
 #   - Treatment of ineligible products:
 #       Inherited from upstream predictions; assigned values should be described
-#       as pseudo-labels unless independently verified.
+#       as predictions unless independently verified.
 #
 # Model / Method:
 #   - Model type:
 #       No model is fitted here. The script post-processes final TabPFN-based
-#       OFF assignment outputs.
+#       OFF prediction outputs.
 #   - Feature set:
-#       Release fields only: OFF row id, OFF product code, assigned HSRs,
+#       Release fields only: OFF row id, OFF product code, predicted HSR values,
 #       mapped nutrient counts, and context-agreement fields.
 #   - Preprocessing:
 #       Chunked CSV reading, row-order validation, and compact CSV.GZ writing.
 #   - Train/validation/test split:
 #       Not applicable; this is a release-formatting script.
 #   - Random seed(s):
-#       Inherited from upstream OFF assignment outputs, typically seed 42 for
-#       the current public release.
+#       Inherited from upstream OFF prediction outputs; not used by this
+#       post-processing step.
 #
 # Hyperparameters:
 #   - chunksize: default 200000 rows.
@@ -116,7 +116,7 @@
 # Outputs:
 #   - Tables:
 #       release/openfoodfacts_hsr_assignment_public/
-#       openfoodfacts_hsr_assignments_public_seed42.csv.gz
+#       openfoodfacts_hsr_assignments_public.csv.gz
 #   - Figures:
 #       None.
 #   - Models:
@@ -127,12 +127,12 @@
 #       release/openfoodfacts_hsr_assignment_public/README.md
 #
 # Reproducibility Notes:
-#   The compact release intentionally omits product names, brands, categories,
-#   and nutrient values. Users can join by OFF product code against the official
-#   Open Food Facts export if they need product metadata.
+#   The compact release omits product names, brands, categories, and nutrient
+#   values. Users can join by OFF product code against the official Open Food
+#   Facts export if they need product metadata.
 #
 # Limitations:
-#   The assigned HSR values are model-derived pseudo-labels, not official OFF
+#   The assigned HSR values are model-derived predictions, not official OFF
 #   labels or direct HSR-calculator outputs.
 # ============================================================
 
@@ -165,7 +165,7 @@ DEFAULT_PLUS_OPENHSR_CONTEXT = (
     "openfoodfacts_hsr_assignments_our_data_plus_openhsr_context.csv.gz"
 )
 DEFAULT_OUTPUT_DIR = Path("release/openfoodfacts_hsr_assignment_public")
-DEFAULT_OUTPUT_NAME = "openfoodfacts_hsr_assignments_public_seed42.csv.gz"
+DEFAULT_OUTPUT_NAME = "openfoodfacts_hsr_assignments_public.csv.gz"
 
 USECOLS = [
     "off_source_row_id",
@@ -179,7 +179,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Build a compact public release artifact from full Open Food Facts "
-            "HSR assignment outputs."
+            "HSR prediction outputs."
         )
     )
     parser.add_argument("--our-context", type=Path, default=DEFAULT_OUR_CONTEXT)
@@ -354,55 +354,49 @@ def build_release(args: argparse.Namespace) -> dict[str, object]:
             "assigned_hsr_context_same",
         ],
         "interpretation": (
-            "assigned_hsr columns are model-derived HSR pseudo-labels, not "
+            "assigned_hsr columns are model-derived HSR predictions, not "
             "official Open Food Facts labels or direct HSR-calculator outputs."
         ),
     }
     metadata_json.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
 
     checksums_path.write_text(
-        "\n".join(
-            [
-                f"{output_hash}  {output_csv.name}",
-                f"{sha256_file(metadata_json)}  {metadata_json.name}",
-            ]
-        )
-        + "\n",
+        f"{output_hash}  {output_csv.name}\n",
         encoding="utf-8",
     )
 
     readme = f"""# Open Food Facts HSR Prediction Public Release
 
-This folder documents the compact public output for the Open Food Facts HSR
-prediction experiment. The main CSV.GZ may be tracked in this folder or attached
-as a GitHub release asset, depending on repository-size policy. The full
-internal prediction files include product names, brands, categories, and
-nutrient fields; those fields are intentionally omitted from this public
-release. Users can join by `code` against the official Open Food Facts export.
+This directory contains the compact Open Food Facts HSR prediction table and
+metadata for the manuscript release. The table is keyed by Open Food Facts
+product `code`, so product names, brands, categories, and nutrient values can be
+joined from the official Open Food Facts export.
 
 ## Main File
 
-- `{output_csv.name}`
+```text
+{output_csv.name}
+```
 
-Rows: `{rows:,}`
+Rows: `{rows:,}`  
 SHA256: `{output_hash}`
 
-The assigned HSR columns are model-derived pseudo-labels, not official Open Food
-Facts labels and not direct HSR-calculator outputs.
+The HSR columns are model-derived predictions, not official Open Food Facts
+labels and not direct HSR-calculator outputs.
 
 ## Columns
 
-- `off_source_row_id`: row index from the OFF export used in the assignment run.
+- `off_source_row_id`: row index from the OFF export used in the prediction run.
 - `code`: Open Food Facts product code/barcode.
-- `assigned_hsr_our_data_context`: HSR assigned using the private labelled
+- `assigned_hsr_our_data_context`: predicted HSR using the manuscript labelled
   context data.
-- `assigned_hsr_our_data_plus_openhsr_context`: HSR assigned using private
-  labelled context data plus OpenHSR.
+- `assigned_hsr_our_data_plus_openhsr_context`: predicted HSR using the
+  manuscript labelled context data plus OpenHSR.
 - `mapped_nutrient_count_*`: number of mapped nutrient fields available to the
   upstream prediction model.
 - `assigned_hsr_context_abs_diff`: absolute difference between the two context
-  assignments.
-- `assigned_hsr_context_same`: whether the two context assignments are exactly
+  predictions.
+- `assigned_hsr_context_same`: whether the two context predictions are exactly
   equal.
 
 ## Summary
@@ -414,9 +408,9 @@ Facts labels and not direct HSR-calculator outputs.
 ## Licence And Attribution Notes
 
 Open Food Facts product data should be accessed from Open Food Facts and reused
-under its database licence and attribution requirements. This release provides
-model-derived HSR pseudo-labels keyed by OFF product code rather than a full
-redistribution of product metadata or nutrition data.
+under its database licence and attribution requirements. This file provides HSR
+predictions keyed by OFF product code; it is not a redistribution of the full
+Open Food Facts product database.
 """
     readme_path.write_text(readme, encoding="utf-8")
 
