@@ -134,13 +134,10 @@ Key outputs:
 
 ## Open Food Facts HSR Release
 
-The compact public OFF prediction file is tracked in this repository and
-documented as GitHub release material:
+The compact public OFF prediction file is tracked in this repository:
 
 - Repository path:
   `release/openfoodfacts_hsr_assignment_public/openfoodfacts_hsr_assignments_public_seed42.csv.gz`
-- Release:
-  [off-hsr-assignments-seed42](https://github.com/HaoxuanGong/openhsr-tabpfn-repro/releases/tag/off-hsr-assignments-seed42)
 - Rows: `4,532,767`
 - Join key: Open Food Facts product `code`
 
