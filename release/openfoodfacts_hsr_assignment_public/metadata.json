@@ -1,0 +1,73 @@
+{
+  "created_utc": "2026-06-08T02:55:57.101350+00:00",
+  "source_files": {
+    "our_data_context": "cloud_run\\openfoodfacts_hsr_assignment_bundle\\results\\openfoodfacts_hsr_assignment_full_contexts\\predictions\\openfoodfacts_hsr_assignments_our_data_context.csv.gz",
+    "our_data_plus_openhsr_context": "cloud_run\\openfoodfacts_hsr_assignment_bundle\\results\\openfoodfacts_hsr_assignment_full_contexts\\predictions\\openfoodfacts_hsr_assignments_our_data_plus_openhsr_context.csv.gz"
+  },
+  "source_sha256": {
+    "cloud_run\\openfoodfacts_hsr_assignment_bundle\\results\\openfoodfacts_hsr_assignment_full_contexts\\predictions\\openfoodfacts_hsr_assignments_our_data_context.csv.gz": "3c2ab24d5b5c196b65df36fdf05d6f02eeabb431f6063364167b55f0b1826fb3",
+    "cloud_run\\openfoodfacts_hsr_assignment_bundle\\results\\openfoodfacts_hsr_assignment_full_contexts\\predictions\\openfoodfacts_hsr_assignments_our_data_plus_openhsr_context.csv.gz": "733a513bc2ac1621ae917a6be70cbdb1576d3f8844b30c6d2cbcbd8cc3ec4682"
+  },
+  "output_files": {
+    "public_predictions": "release\\openfoodfacts_hsr_assignment_public\\openfoodfacts_hsr_assignments_public_seed42.csv.gz",
+    "summary_by_quality": "release\\openfoodfacts_hsr_assignment_public\\summary_by_quality.csv"
+  },
+  "output_sha256": {
+    "openfoodfacts_hsr_assignments_public_seed42.csv.gz": "4597aa34246a6dce2e9248f0af135f0db93d899bde3a30714666548f7af1d91f",
+    "summary_by_quality.csv": "63b8b1a9f7549aa10cd7607d3052b40578d6d5778a2ab8cc689480c3e27c01bf"
+  },
+  "row_count": 4532767,
+  "missing_code_count": 0,
+  "context_exact_agreement_count": 2022462,
+  "context_exact_agreement_fraction": 0.4461870641045525,
+  "context_mean_absolute_difference": 0.326773910946669,
+  "assignment_quality_counts": {
+    "our_data_context": {
+      "high": 2207405,
+      "low_feature_count": 2325362
+    },
+    "our_data_plus_openhsr_context": {
+      "high": 2207405,
+      "low_feature_count": 2325362
+    }
+  },
+  "assigned_hsr_counts": {
+    "our_data_context": {
+      "0.5": 97953,
+      "1.0": 139056,
+      "1.5": 171695,
+      "2.0": 251182,
+      "2.5": 313435,
+      "3.0": 1517936,
+      "3.5": 676805,
+      "4.0": 788743,
+      "4.5": 444115,
+      "5.0": 131847
+    },
+    "our_data_plus_openhsr_context": {
+      "0.5": 121073,
+      "1.0": 145451,
+      "1.5": 225015,
+      "2.0": 261713,
+      "2.5": 312792,
+      "3.0": 424116,
+      "3.5": 1628803,
+      "4.0": 716287,
+      "4.5": 526530,
+      "5.0": 170987
+    }
+  },
+  "release_columns": [
+    "off_source_row_id",
+    "code",
+    "assigned_hsr_our_data_context",
+    "assignment_quality_our_data_context",
+    "mapped_nutrient_count_our_data_context",
+    "assigned_hsr_our_data_plus_openhsr_context",
+    "assignment_quality_our_data_plus_openhsr_context",
+    "mapped_nutrient_count_our_data_plus_openhsr_context",
+    "assigned_hsr_context_abs_diff",
+    "assigned_hsr_context_same"
+  ],
+  "interpretation": "assigned_hsr columns are model-derived HSR pseudo-labels. assignment_quality is a release quality flag; with a single seed it primarily reflects mapped nutrient-field completeness."
+}
