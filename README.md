@@ -155,8 +155,6 @@ The file checksum is recorded in
   notebook: one-hot encode `category`, select numeric and boolean columns, scale
   train/test using a train-fitted `StandardScaler`, then fit each model on the
   training fold.
-- The upstream notebook variable named `XGBR` is implemented as scikit-learn
-  `GradientBoostingRegressor`, not the external `xgboost` package.
 - OFF `assigned_hsr` values are model-derived predictions, not official Open
   Food Facts labels and not direct HSR-calculator outputs.
 
