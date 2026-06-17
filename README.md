@@ -143,12 +143,6 @@ To rebuild the compact file from the full local/cloud prediction outputs:
 python scripts/build_public_off_prediction_release.py
 ```
 
-To publish the same file as a GitHub release asset from an authenticated machine:
-
-```bash
-bash scripts/upload_public_off_prediction_release_to_github.sh
-```
-
 The file checksum is recorded in
 `release/openfoodfacts_hsr_assignment_public/SHA256SUMS.txt`.
 
